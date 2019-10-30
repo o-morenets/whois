@@ -5,7 +5,6 @@
  */
 package ru.whois.model;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

@@ -2,7 +2,6 @@ package ru.whois.repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -13,19 +12,19 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import ru.whois.model.*;
-import ru.whois.web.Request;
 
 @Repository
 public class DomainRepository {
-
     private static Logger logger = Logger.getLogger(DomainRepository.class.getName());
 
     @Autowired
     private JdbcTemplate template;
-    private String findDomainInfo = "select *\n" +
+
+    private String findDomainInfo =
+            "select d.name domainname, c.name, c.org, c.street, c.city, c.sp state, c.pc postalcode, c.cc country\n" +
             "from r_domain d\n" +
             "join r_contact c on (c.handle = d.registrant)\n" +
-            "where d.name = ?";
+            "where d.name = ?;";
 
     public DomainInfo findDomainInfo(String domainName) {
         logger.log(Level.INFO, "searching by domain: " + domainName);
@@ -49,13 +48,13 @@ class DomainRowMapper implements RowMapper<DomainInfo> {
     @Override
     public DomainInfo mapRow(ResultSet rs, int i) throws SQLException {
         return new DomainInfo(
-                rs.getString("domainName"),
+                rs.getString("domainname"),
                 rs.getString("name"),
-                rs.getString("organizationName"),
-                rs.getString("streetAddress"),
+                rs.getString("org"),
+                rs.getString("street"),
                 rs.getString("city"),
                 rs.getString("state"),
-                rs.getString("postalCode"),
+                rs.getString("postalcode"),
                 rs.getString("country")
         );
     }

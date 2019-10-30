@@ -1,10 +1,10 @@
-package ru.whois.web;
+package ru.whois.model;
 
 import lombok.Data;
 
 @Data
 public class Request {
-    String domain;
+    private String domain;
 }
 
  

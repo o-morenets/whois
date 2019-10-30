@@ -20,14 +20,17 @@ public class ContactsRepository {
     @Autowired
     private JdbcTemplate template;
 
-    private String findContactInfo = "select * from r_contact where name = ?";
+    private String findContactInfo = "select *\n" +
+            "from r_domain d\n" +
+            "join r_contact c on (c.handle = d.c_admin)\n" +
+            "where d.name = ?;";
 
     public ContactInfo findContactInfo(String domainName) {
-        logger.log(Level.INFO, "searching by contact:  {}", domainName);
+        logger.log(Level.INFO, "searching by contact: ", domainName);
         try {
             ContactInfo contactInfo = template.queryForObject(findContactInfo, new Object[]{domainName},
                     new ConatctRowMapper());
-            logger.log(Level.INFO, "found: {}", contactInfo);
+            logger.log(Level.INFO, "found: ", contactInfo);
 
             return contactInfo;
 

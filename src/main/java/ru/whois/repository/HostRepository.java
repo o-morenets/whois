@@ -16,25 +16,24 @@ import ru.whois.model.HostInfo;
 
 @Repository
 public class HostRepository {
-
     private static Logger logger = Logger.getLogger(DomainRepository.class.getName());
 
     @Autowired
     private JdbcTemplate template;
 
-    private String findHostInfo = "select h.oid, h.name, h.domain, hip.ipaddr, hip.ipver "
-            + "    from r_domain d"
-            + "    left join r_domain_ns dns on (dns.domain = d.id)"
-            + "    left join r_host h on (h.id = dns.ns)"
-            + "    left join r_host_ip hip on (hip.host = h.id)"
-            + "    where d.name = ?";
+    private String findHostInfo = "select *\n" +
+            "from r_domain d\n" +
+            "join r_domain_ns dns on (dns.domain = d.id)\n" +
+            "join r_host h on (h.id = dns.ns)\n" +
+            "join r_host_ip hip on (hip.host = h.id)\n" +
+            "where d.name = ?;";
 
     public List<HostInfo> findHostInfo(String domainName) {
-        logger.log(Level.INFO, "searching by contact:  {}", domainName);
+        logger.log(Level.INFO, "searching by host: ", domainName);
         try {
             List<HostInfo> hosts = template.query(findHostInfo, new Object[]{domainName},
                     new HostRowMapper());
-            logger.log(Level.INFO, "found: {}", hosts);
+            logger.log(Level.INFO, "found: ", hosts);
 
             return hosts;
 
@@ -51,7 +50,11 @@ class HostRowMapper implements RowMapper<HostInfo> {
     @Override
     public HostInfo mapRow(ResultSet rs, int rowNum) throws SQLException {
 
-        return new HostInfo(rs.getString("oid"),
-                rs.getString("name"), rs.getString("domain"), rs.getString("ipaddr"), rs.getString("ipver"));
+        return new HostInfo(
+                rs.getString("oid"),
+                rs.getString("name"),
+                rs.getString("domain"),
+                rs.getString("ipaddr"),
+                rs.getString("ipver"));
     }
 }
