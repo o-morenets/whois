@@ -13,11 +13,9 @@ import lombok.Data;
 @AllArgsConstructor
 public class StatusInfo {
 
-	private String created;
-	private String updated;
-	private String status;
-	private String registarcr;
-	private String registrar;
-	
-
+    private String created;
+    private String updated;
+    private String status;
+    private String registarcr;
+    private String registrar;
 }

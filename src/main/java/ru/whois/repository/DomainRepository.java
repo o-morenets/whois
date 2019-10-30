@@ -21,48 +21,42 @@ public class DomainRepository {
     private static Logger logger = Logger.getLogger(DomainRepository.class.getName());
 
     @Autowired
-    private ContactsRepository contactsRepository;
+    private JdbcTemplate template;
+    private String findDomainInfo = "select *\n" +
+            "from r_domain d\n" +
+            "join r_contact c on (c.handle = d.registrant)\n" +
+            "where d.name = ?";
 
-    @Autowired
-    private HostRepository hostRepository;
-
-    @Autowired
-    private StatusRepository statusRepository;
-
-    public String findWhoIsInfo(Request request) {
-        logger.log(Level.INFO, "searching by domain: " + request);
+    public DomainInfo findDomainInfo(String domainName) {
+        logger.log(Level.INFO, "searching by domain: " + domainName);
         try {
-            ContactInfo contactInfo = contactsRepository.findContactInfo(request.getDomain());
-            List<HostInfo> hostInfo = hostRepository.findHostInfo(request.getDomain());
-            List<StatusInfo> statusInfo = statusRepository.findStatusInfo(request.getDomain());
+            DomainInfo domainInfo = template.queryForObject(findDomainInfo, new Object[]{domainName},
+                    new DomainRowMapper());
+            logger.log(Level.INFO, "found: " + domainInfo);
 
-            WhoIsInfo whoIsInfo = new WhoIsInfo(contactInfo, hostInfo, statusInfo);
-            logger.log(Level.INFO, "found: " + whoIsInfo);
-
-            return whoIsInfo.toString();
+            return domainInfo;
 
         } catch (EmptyResultDataAccessException e) {
-            logger.log(Level.INFO, "not found by domain: " + request);
+            logger.log(Level.INFO, "not found by domain: " + domainName);
 
             return null;
         }
     }
 }
 
-class DomainRowMapper implements RowMapper<TemporaryModel> {
+class DomainRowMapper implements RowMapper<DomainInfo> {
 
     @Override
-    public TemporaryModel mapRow(ResultSet rs, int i) throws SQLException {
-        return new TemporaryModel(
-                rs.getLong("id"),
-                rs.getLong("oid"),
+    public DomainInfo mapRow(ResultSet rs, int i) throws SQLException {
+        return new DomainInfo(
+                rs.getString("domainName"),
                 rs.getString("name"),
-                rs.getLong("tld"),
-                rs.getString("registrant"),
-                rs.getString("c_admin"),
-                rs.getString("c_tech"),
-                rs.getString("c_bill"),
-                rs.getDate("expired")
+                rs.getString("organizationName"),
+                rs.getString("streetAddress"),
+                rs.getString("city"),
+                rs.getString("state"),
+                rs.getString("postalCode"),
+                rs.getString("country")
         );
     }
 }
