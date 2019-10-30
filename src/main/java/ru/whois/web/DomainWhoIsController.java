@@ -62,7 +62,21 @@ public class DomainWhoIsController {
                 .append(System.lineSeparator())
                 .append("Nameserver in listed order").append(System.lineSeparator())
                 .append(System.lineSeparator());
-        // TODO
+
+        hostInfo.forEach(hInfo -> sb
+                .append("Server.................: ").append(hInfo.getDomain()).append(System.lineSeparator())
+                .append("Ip address.............: ").append(hInfo.getIpaddr()).append(System.lineSeparator())
+        );
+
+        sb.append(System.lineSeparator());
+
+        statusInfo.forEach(sInfo -> sb
+                .append("Domain created: ").append(sInfo.getCreated()).append(System.lineSeparator())
+                .append("Last modified: ").append(sInfo.getUpdated()).append(System.lineSeparator())
+                .append("Domain status: ").append(sInfo.getStatus()).append(System.lineSeparator())
+                .append("Registrar created: ").append(sInfo.getRegistarcr()).append(System.lineSeparator())
+                .append("Current Registrar: ").append(sInfo.getRegistrar()).append(System.lineSeparator())
+        );
 
         return sb.toString();
     }
